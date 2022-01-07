@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<!--html의 네임스페이스를 타임리프로 변경 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<!--서버에서 model로 넘긴 data 파라미터 값이 출력됨-->
+<!--devtools 적용시 컨트롤 + 쉬프트 + f9 누르면 서버를 재시작하지 않아도 컴파일이됨-->
+<p th:text="'안녕하세요4. ' + ${data}" >안녕하세요. 손님</p>
+</body>
+</html>
