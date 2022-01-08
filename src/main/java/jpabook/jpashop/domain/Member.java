@@ -25,6 +25,7 @@ public class Member {
     - order의 member애 맵핑된 정보. 
     - 읽기전용이며 mebmer가 연관관계 주인이다. why 테이블 관게에서 fk는 order에 존재함
     - member정보를 바꿨는데 order의 fk가 변경되는것보다 order의 정보를바꾸니까 order의 fk가 바뀌는게 자연스러움
+    - 컬랙션은 변수선언광
      */
     @OneToMany(mappedBy = "member") // 
     private List<Order> orders = new ArrayList<>();

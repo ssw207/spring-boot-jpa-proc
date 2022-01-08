@@ -12,7 +12,7 @@ public class Delivery {
     @Column(name = "delivery_id")
     private Long id;
 
-    @OneToOne(mappedBy = "delivery") // 1:1 관계는 join 컬럼 설정하지 않아도됨
+    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY) // 1:1 관계는 join 컬럼 설정하지 않아도됨
     private Order order;
 
     @Embedded
