@@ -1,6 +1,7 @@
-package jpabook.jpashop.domain.repository;
+package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -13,15 +14,21 @@ import java.util.List;
  * SpringBean으로 등록한다.
  */
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
 
-    @PersistenceContext
-    private EntityManager em; //Spring이 EntityManager을 만들어 주입
-
+    /**
+    * Spring Data JPA 사용시 @PersistenceContext 대신 @Autowired 를 사용가능함
+    * 따라서 롬복의 @RequiredArgsConstructor 사용해 생성자 주입방식으로 주입받을수 있다.
+    */
+    //@PersistenceContext
+    private final EntityManager em; //Spring이 EntityManager을 만들어 주입
+    
     public void save(Member member) {
         /**
          * persist시 영속성 컨텍스트에 입력한 객체를 넣고
          * 트렉젝션이 종료되는 시점에 DB에 반영한다.
+         * 영속성 컨텍스트에 등록할때 key는 엔티티의 id값이 등록됨 (DB등록전이라도 엔티티에 id값이 세팅됨)
          */
         em.persist(member);
     }
