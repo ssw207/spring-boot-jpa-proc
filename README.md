@@ -11,3 +11,11 @@
   ```
 - EntityManager는 Transaction 상황에서만 실행가능함 Transaction 이 열리지 않으면 위와 같은 에러발생
 - 매서드에 @Transactional 어노테이션 추가해 해결
+
+## 2022-01-09
+1. 문제상황
+   - Book 상품 저장시 dtype 컬럼 Book으로 저장되는 오류 발생
+   - 원인
+     - Item 클래스에 @DiscriminatorColumn(name = "dtype") 형태로 정의시 상속 받은 클래스 에서 @DiscriminatorValue("M") 선언해 어떤값으로 dtype을 입력할지 지정해야하는데 해당소스 누락됨
+   - 해결
+     - @DiscriminatorValue("M") 코드 추가
