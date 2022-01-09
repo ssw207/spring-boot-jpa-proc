@@ -1,6 +1,8 @@
 package jpabook.jpashop.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders") // order by 예약어때문에 관례로 orders사용
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 객체를 직접생성해서 set으로 필드추가하는것을 방지
 public class Order {
 
     @Id @GeneratedValue
