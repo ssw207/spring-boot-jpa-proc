@@ -2,15 +2,15 @@ package jpabook.jpashop.controller;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.repository.OrderSearch;
 import jpabook.jpashop.service.ItemService;
 import jpabook.jpashop.service.MemberService;
 import jpabook.jpashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +39,20 @@ public class OrderController {
                              @RequestParam("count") int count) {
 
         orderService.order(memberId, itemId, count);
+        return "redirect:/orders";
+    }
+
+
+    @GetMapping("/orders")
+    public String orderList(@ModelAttribute("orderSearch") OrderSearch orderSearch, Model model) {
+        //@ModelAttribute("orderSearch") 사용시 자동으로 model에 담긴다
+        model.addAttribute("orders", orderService.findOrders(orderSearch));
+        return "order/orderList";
+    }
+
+    @PostMapping("/orders/{orderId}/cancel")
+    public String cancelOrder(@PathVariable("orderId") Long orderId, Model model) {
+        orderService.cancelOrder(orderId);
         return "redirect:/orders";
     }
 }

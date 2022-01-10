@@ -42,6 +42,7 @@ public class Order {
 
     private LocalDateTime orderDate; //주문시간, 로컬데이트 타임을쓰면 자바8에서 자동으로 읽기때문에 @ 필요없다
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status; // 주문상태 [ORDER, CANCEL]
 
     /**
