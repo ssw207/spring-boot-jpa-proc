@@ -4,16 +4,48 @@ import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    /*
+    v1 버전 문제점
+    1)엔티티의 정보가 모두 노출됨 - 원치않는 orders 정보도 도출된다
+      -> @JsonIgnore 사용시 원하지 않는 필드는 제외하고 표현가능 
+      -> but 엔티티에 화면관련 로직이 들어옴
+    2)엔티티가 바뀌면 api스팩이 바뀜 
+    3)컬랙션 리턴시 스팩 확장이 어려움 
+      - 리턴시 array이나 데이터와 별개로 갯수를 보내줘야하는경우 대응불가
+     */
+    @GetMapping("/api/v1/members")
+    public List<Member> membersV1 () {
+        return memberService.findMembers();
+    }
+
+    /*
+    v2 버전 장점
+    - 엔티티가 변해도 api 스팩이 변하지 않는다
+    - api 스팩이변해도 유연하게 대응가능
+     */
+    @GetMapping("/api/v2/members")
+    public Result memberV2() {
+        List<Member> findMembers = memberService.findMembers();
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName()))
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
 
     /*
     api v1
@@ -78,6 +110,18 @@ public class MemberApiController {
     @AllArgsConstructor
     static class UpdateMemberResponse {
         private Long id;
+        private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
         private String name;
     }
 }
