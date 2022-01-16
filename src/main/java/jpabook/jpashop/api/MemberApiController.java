@@ -2,11 +2,10 @@ package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -34,13 +33,26 @@ public class MemberApiController {
     - CreateMemberRequest를 보면 api스팩 확인가능
      */
     @PostMapping("/api/v2/members")
-    public CreateMemberResponse saveMemberV1(@RequestBody @Valid CreateMemberRequest request) {
+    public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
 
         Member member = new Member();
         member.setName(request.getName());
 
         Long id = memberService.join(member);
         return new CreateMemberResponse(id);
+    }
+
+    @PutMapping("/api/v2/members/{id}")
+    public UpdateMemberResponse updateMemeberV2 (
+            @PathVariable("id") Long id,
+            @RequestBody @Valid UpdateMemberRequest request) {
+
+        /*
+            성능상 크리티컬하지 않다면 커맨드(수정,삭제,생성등)와 쿼리(조회)를 분리하면 유지보수정이 좋아짐. (단일책임원칙)
+        */
+        memberService.update(id, request.getName()); // 커맨드
+        Member findMember = memberService.findOne(id); // 쿼리
+        return new UpdateMemberResponse(findMember.getId(), findMember.getName());
     }
 
     @Data
@@ -54,6 +66,18 @@ public class MemberApiController {
 
     @Data
     static class CreateMemberRequest {
+        private String name;
+    }
+
+    @Data
+    static class UpdateMemberRequest {
+        private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class UpdateMemberResponse {
+        private Long id;
         private String name;
     }
 }

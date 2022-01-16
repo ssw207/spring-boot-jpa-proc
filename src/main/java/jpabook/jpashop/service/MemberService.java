@@ -3,11 +3,9 @@ package jpabook.jpashop.service;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,6 +60,19 @@ public class MemberService {
 
     public Member findOne(Long memberId) {
         return memberRepository.findOne(memberId);
+    }
+
+    @Transactional
+    public Long update(Long id, String name) {
+        //영속화
+        Member member = memberRepository.findOne(id);
+        //더티체킹
+        member.setName(name);
+
+        //AOP종료시점 commit -> flush() 변경점 동기화 -> SQL날림
+
+        //member를 반환하면 영속후에 조회를함 (영속, 쿼리를 같이함)
+        return member.getId();
     }
 }
 
