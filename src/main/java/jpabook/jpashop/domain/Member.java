@@ -16,11 +16,6 @@ public class Member {
     @Column(name = "member_id") // 컬럼명지정
     private Long id;
 
-    /*
-    문제1 : 프레젠테이션 검증로직이 엔티티에 들어가있다.
-    문제2 : 엔티티를 바뀌면 api스팩이 바뀐다. -> api 스팩을 위한 별도의 dto가 필요하다. (매우큰 장애요인)
-    문제3 : 회원가입 방식은 여러개일수 있음 -> 엔티티 하나로 대응불가
-     */
     @NotEmpty
     private String name;
 
