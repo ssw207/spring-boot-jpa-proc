@@ -75,11 +75,11 @@ public class Order {
     }
 
     //==생성 매서드==//
-    public static Order createOrder(Member memebr, Delivery delivery, OrderItem... orderitems) {
+    public static Order createOrder(Member memebr, Delivery delivery, OrderItem... orderItems) {
         Order order = new Order();
         order.setMember(memebr);
         order.setDelivery(delivery);
-        for (OrderItem orderItem : orderitems) {
+        for (OrderItem orderItem : orderItems) {
             order.addOrderItem(orderItem);
         }
         order.setStatus(OrderStatus.ORDER);
