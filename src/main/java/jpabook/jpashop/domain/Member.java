@@ -30,6 +30,7 @@ public class Member {
     - member정보를 바꿨는데 order의 fk가 변경되는것보다 order의 정보를바꾸니까 order의 fk가 바뀌는게 자연스러움
     - 컬랙션은 변수선언광
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "member") // 
     private List<Order> orders = new ArrayList<>();
 }

@@ -21,7 +21,12 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o", Order.class).getResultList();
+    }
+    
     public List<Order> findAllByString(OrderSearch orderSearch) {
+        //지연로딩 문제를 해결하려고 EAGER 변경시 사용시 N + 1문제가 발생함
         return em.createQuery("select o from Order o join o.member m" +
                 " where o.status = :status" +
                 " and m.name like :name", Order.class)
