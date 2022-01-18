@@ -24,6 +24,7 @@ public class initDb {
     @PostConstruct // Bean이 다 실행된 뒤에 호출됨
     public void init() {
         initService.dbInit1();
+        initService.dbInit2();
     }
 
 
