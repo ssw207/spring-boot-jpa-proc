@@ -50,6 +50,18 @@ public class OrderSimpleApiController {
                 .collect(toList());
     }
 
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> orderV3() {
+        /**
+         * 분석
+         * 1)fetch join 으로 order, delivery, member를 join해 하나의 쿼리로 리턴
+         * 2)LAZY를 무시하고 프록시가 아니라 엔티티 객체를 세팅함
+         */
+        return orderRepository.findAllWithMemberDelivery().stream()
+                .map(SimpleOrderDto::new)
+                .collect(Collectors.toList());
+    }
+
     @Data
     static class SimpleOrderDto {
         private Long orderId;

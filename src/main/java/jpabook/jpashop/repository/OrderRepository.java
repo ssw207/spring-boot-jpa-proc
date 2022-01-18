@@ -2,6 +2,7 @@ package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -34,5 +35,14 @@ public class OrderRepository {
                 .setParameter("name", orderSearch.getMemberName())
                 .setMaxResults(1000) //최대 1000건
                 .getResultList();
+    }
+
+    //한방쿼리로 order, memeber, delivery를 조인후 땡겨온다 (LAZY를 무시하고 한번에 엔티티를 조회해 가져옴)
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        ).getResultList();
     }
 }
