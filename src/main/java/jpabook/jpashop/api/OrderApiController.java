@@ -134,13 +134,27 @@ public class OrderApiController {
      * dto로 조회
      */
     @GetMapping("/api/v4/orders")
-    public List<OrderQueryDto> orderV4_page() {
+    public List<OrderQueryDto> orderV4() {
         /**
          * 1) 1:1 관계는 조인 -> 쿼리1 //TOOD 왜 페치조인을 안써도 조인이되지?
          * 2) N : 1 관계 조인 -> 1) * 쿼리1
          * => N + 1문제 발생
          */
         return orderQueryRepository.findOrderQueryDtos();
+    }
+
+    /**
+     * dto로 조회 최적화
+     */
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> orderV5() {
+        /**
+         * 1) order , item, order 조인해 조회
+         * 2) 1)에서 조회환 order_id값을 List로 바꾼뒤 in절 조회로 OrderItems 조회
+         * 3) OrderItems를 order_id를 key로 Map전환
+         * 4) 1)의 orderItems에 1)의 order_id로 3)의 orderItems정보를 조회후 1)의 orderItems에 세팅 (메모리)
+         */
+        return orderQueryRepository.findOrderByDto_optimization();
     }
 
     @Getter
