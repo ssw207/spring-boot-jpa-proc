@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
@@ -43,10 +45,18 @@ public class OrderApiController {
 
     @GetMapping("/api/v2/orders")
     public List<OrderDto> orderV2() {
+        /**
+         * orders -> 2개조회
+         *   -> order에서 delivery 조회1
+         *               member 조회1
+         *               orderitem 조회2
+         *                     -> item 조회1
+         *
+         */
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(OrderDto::new)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Getter
@@ -56,7 +66,7 @@ public class OrderApiController {
         private LocalDateTime orderDate;
         private OrderStatus orderStatus;
         private Address address;
-        private List<OrderItem> orderItems;
+        private List<OrderItemDto> orderItems;
 
         public OrderDto(Order order) {
             orderId = order.getId();
@@ -65,7 +75,25 @@ public class OrderApiController {
             address = order.getDelivery().getAddress();
             orderDate = order.getOrderDate();
             //order.getOrderItems().stream().forEach(o -> o.getItem().getName());
-            //orderItems = order.getOrderItems();
+            /**
+             * 내부에 엔티티도 Dto로 변환해서 리턴해야함
+             * 엔티티를 노출하면 엔티티 변셩시 api스팩이 변경되는 이슈발생
+             */
+            orderItems = order.getOrderItems().stream().map(OrderItemDto::new).collect(toList());
+        }
+    }
+
+    @Getter
+    static class OrderItemDto {
+
+        private String itemName;
+        private int orderPrice;
+        private int count;
+
+        OrderItemDto(OrderItem orderItem) {
+            itemName = orderItem.getItem().getName();;
+            orderPrice = orderItem.getOrderPrice();
+            count = orderItem.getCount();
         }
     }
 }

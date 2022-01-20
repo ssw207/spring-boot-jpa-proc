@@ -30,7 +30,7 @@ public class Order {
               cascade 옵션이 없다면 persist(orderItemA).. 형태로 각각 영속화해야함
               CascadeType.ALL 인경우 delete할때도 같이 지움
      */
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     /*
