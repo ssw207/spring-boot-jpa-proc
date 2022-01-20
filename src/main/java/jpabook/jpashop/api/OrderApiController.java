@@ -5,6 +5,8 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
+import jpabook.jpashop.repository.order.query.OrderQueryDto;
+import jpabook.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,8 @@ import static java.util.stream.Collectors.toList;
 public class OrderApiController {
 
     private final OrderRepository orderRepository;
-    private List<OrderDto> collect;
+    private final OrderQueryRepository orderQueryRepository;
+
 
     /**
      * 엔티티 노출로 무한루프
@@ -125,6 +128,19 @@ public class OrderApiController {
             @RequestParam(value = "offsert", defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "100") int limit) {
         return orderRepository.findAllWithMemberDelivery(offset, limit).stream().map(OrderDto::new).collect(toList());
+    }
+
+    /**
+     * dto로 조회
+     */
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> orderV4_page() {
+        /**
+         * 1) 1:1 관계는 조인 -> 쿼리1 //TOOD 왜 페치조인을 안써도 조인이되지?
+         * 2) N : 1 관계 조인 -> 1) * 쿼리1
+         * => N + 1문제 발생
+         */
+        return orderQueryRepository.findOrderQueryDtos();
     }
 
     @Getter

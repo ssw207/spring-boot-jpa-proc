@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderSimpleQueryRepository {
 
-    private EntityManager em;
+    private final EntityManager em;
 
     public List<OrderSimpleQueryDto> findOrderDtos() {
         return em.createQuery(
