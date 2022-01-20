@@ -43,4 +43,14 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member" +
+                        " join fetch o.delivery" +
+                        " join fetch o.orderItems oi" + // 1 : N은 데이터가 뻥튀기된다
+                        " join fetch oi.item", Order.class
+        ).getResultList();
+    }
 }
