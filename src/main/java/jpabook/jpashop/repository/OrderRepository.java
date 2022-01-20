@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -52,5 +53,15 @@ public class OrderRepository {
                         " join fetch o.orderItems oi" + // 1 : N은 데이터가 뻥튀기된다
                         " join fetch oi.item", Order.class
         ).getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 public class OrderApiController {
 
     private final OrderRepository orderRepository;
+    private List<OrderDto> collect;
 
     /**
      * 엔티티 노출로 무한루프
@@ -89,6 +91,40 @@ public class OrderApiController {
             System.out.println(orderDto.toString()+ " id: " +orderDto.getOrderId());
         }
         return collect;
+    }
+
+    /**
+     * 컬랙션 조인 최적화
+     * 1) xToOne 관계는 페치조인
+     * 2) xToMany 관계는 지연로딩후 루프를 돌면서 초기화 (1:N:M 문제발생)
+     */
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> orderV_page(
+            @RequestParam(value = "offsert", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        return orderRepository.findAllWithMemberDelivery().stream().map(OrderDto::new).collect(toList());
+    }
+
+    /**
+     * application.yml -> default_batch_fetch_size 옵션추가 or @BatchSize 사용
+     * 100 : 데이터가 많으면 쿼리가 많이나감
+     * 1000 : 쿼리가 적게나가지만 순간적으로 DB, 어플리케이션에 부하가 늘어남
+     * -> 버틸수있는한 큰숫자가 좋다.
+     *
+     * 1) orderItem 조회시 Order id값을 in절로 한번에 조회함
+     * 2) Item 조회시 OrderItem id값을 in절로 한번에 조회함
+     * => 1 + N -> 1 + 1로 최적화됨
+     *
+     * vs 페치조인
+     * 1) 페이징이 가능하다
+     * 2) 쿼리수는 약간 증가하지만 DB전송량이 감소함
+     * 3) DB데이터 전송량이 최적화된다     *
+     */
+    @GetMapping("/api/v3.2/orders")
+    public List<OrderDto> orderV3_2_page(
+            @RequestParam(value = "offsert", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        return orderRepository.findAllWithMemberDelivery(offset, limit).stream().map(OrderDto::new).collect(toList());
     }
 
     @Getter

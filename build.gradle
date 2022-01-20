@@ -26,7 +26,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-devtools' // 캐시초기화, 자동재시작등 개발에 필요한 의존성들을 넣어줌 톰켓 구동시 restartedMain 출력되면 적용된것
 
 	// spring boot가 사전에 설정하지 않은 라이브러리는 버전을 설정을해야함
-	//implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6") // DB 파라미터 로그를 바인딩 해주는 라이브러리
+	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6") // DB 파라미터 로그를 바인딩 해주는 라이브러리
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
 
