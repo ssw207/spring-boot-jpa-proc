@@ -21,7 +21,7 @@ public class OrderQueryRepository {
         //TODO steam foreach와 차이첨은?
         result.forEach(o -> {
             List<OrderItemQueryDto> orderItems = findOrderItems(o.getOrderId());
-            o.setOrderitems(orderItems);
+            o.setOrderItems(orderItems);
         });
         return result;
     }
@@ -54,7 +54,7 @@ public class OrderQueryRepository {
 
         //orders에서 order id로 orderItem map에서 정보조회후 orderItems에 세팅함
         //쿼리를 1번 날린후 메모리에서 세팅 하므로 최적화됨
-        result.forEach(o -> o.setOrderitems(orderItemMap.get(o.getOrderId())));
+        result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
         
         return result;
     }
@@ -80,5 +80,17 @@ public class OrderQueryRepository {
         Map<Long, List<OrderItemQueryDto>> orderItemMap = orderItems.stream()
                 .collect(Collectors.groupingBy(orderItemQueryDto -> orderItemQueryDto.getOrderId()));
         return orderItemMap;
+    }
+
+    public List<OrderFlatDto> findAllByDto_flat() {
+        return em.createQuery(
+                "select new" +
+                        " jpabook.jpashop.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +
+                        " from Order o" +
+                        " join o.member m" +
+                        " join o.delivery d" +
+                        " join o.orderItems oi" +
+                        " join oi.item i", OrderFlatDto.class)
+                .getResultList();
     }
 }
