@@ -1,21 +1,15 @@
 package jpabook.jpashop.api;
 
-import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
-import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
-import jpabook.jpashop.repository.order.query.OrderFlatDto;
-import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
-import jpabook.jpashop.repository.order.query.OrderQueryDto;
-import jpabook.jpashop.repository.order.query.OrderQueryRepository;
-import lombok.Getter;
+import jpabook.jpashop.repository.order.dto.OrderDto;
+import jpabook.jpashop.repository.order.query.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.*;
@@ -26,6 +20,7 @@ public class OrderApiController {
 
     private final OrderRepository orderRepository;
     private final OrderQueryRepository orderQueryRepository;
+    private final OrderQueryService orderQueryService;
 
 
     /**
@@ -61,6 +56,16 @@ public class OrderApiController {
         return orders.stream()
                 .map(OrderDto::new)
                 .collect(toList());
+    }
+
+    /**
+     * open-in-view 옵션을 끄면 트렌젝션이 종료되는순간 DB커넥션을 반환하고 영속성 컨텍스트를 종료하기 때문에
+     * 컨트롤러, view에서 지연로딩이 불가능하다.
+     * 따라서 지연로딩을 서비스 영역으로 이동해야한다.
+     */
+    @GetMapping("/api/v2.1/orders")
+    public List<OrderDto> orderV2_1() {
+        return orderQueryService.orderV2_1();
     }
 
     /**
@@ -175,41 +180,5 @@ public class OrderApiController {
                 .collect(toList());
     }
 
-    @Getter
-    static class OrderDto {
-        private Long orderId;
-        private String name;
-        private LocalDateTime orderDate;
-        private OrderStatus orderStatus;
-        private Address address;
-        private List<OrderItemDto> orderItems;
 
-        public OrderDto(Order order) {
-            orderId = order.getId();
-            name = order.getMember().getName();
-            orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();
-            orderDate = order.getOrderDate();
-            //order.getOrderItems().stream().forEach(o -> o.getItem().getName());
-            /**
-             * 내부에 엔티티도 Dto로 변환해서 리턴해야함
-             * 엔티티를 노출하면 엔티티 변셩시 api스팩이 변경되는 이슈발생
-             */
-            orderItems = order.getOrderItems().stream().map(OrderItemDto::new).collect(toList());
-        }
-    }
-
-    @Getter
-    static class OrderItemDto {
-
-        private String itemName;
-        private int orderPrice;
-        private int count;
-
-        OrderItemDto(OrderItem orderItem) {
-            itemName = orderItem.getItem().getName();;
-            orderPrice = orderItem.getOrderPrice();
-            count = orderItem.getCount();
-        }
-    }
 }
